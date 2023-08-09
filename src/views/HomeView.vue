@@ -22,6 +22,7 @@ export default {
         success: function (data) {
           user.value = data.name
           pass.value = data.email
+          console.log(data)
         }
       })
   
