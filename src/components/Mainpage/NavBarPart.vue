@@ -10,26 +10,26 @@
       @select="handleSelect"
     >
       <el-menu-item index="0">
-        <router-link :to="{name: 'home'}">LOGO</router-link>
-
+        <!-- <router-link :to="{name: 'home'}">LOGO</router-link> -->
+logo
         </el-menu-item>
       <div class="flex-grow" />
-      <el-menu-item index="1">
-        <router-link :to="{name: 'home'}">Home</router-link>
+      <el-menu-item index="home">
+        Home
         </el-menu-item>
-      <el-menu-item index="2">
-        <router-link  :to="{name: 'community'}" >Community</router-link>     
+      <el-menu-item index="community">
+        Community
         </el-menu-item>
   
-      <el-menu-item index="3">
-        <router-link  :to="{name: 'community'}" > Match History</router-link>     
+      <el-menu-item index="matchhistory">
+        Match History
       </el-menu-item>
   
-      <el-menu-item index="4">
-        <router-link  :to="{name: 'sign'}" > Sign Up</router-link>     
+      <el-menu-item index="sign">
+        Sign
       </el-menu-item>
-      <el-menu-item index="5">
-        <router-link  :to="{name: 'login'}" > Login</router-link>
+      <el-menu-item index="login">
+        Login
       </el-menu-item>
     </el-menu>
   </template>
@@ -37,10 +37,17 @@
   <script lang="ts" setup>
   import { ref } from 'vue'
 // import { useStore } from "vuex";
-
+import { useRouter } from 'vue-router';
   const activeIndex = ref('1')
+  const $router = useRouter();
   const handleSelect = (key: string, keyPath: string[]) => {
+    //跳转到对应的页面
+    //如果key是0，也跳转到home页面
+    if (key === '0') {
+      key = 'home'
+    }
     console.log(key, keyPath)
+    $router.push({ name: key });
   }
         // const store = useStore();
 
@@ -52,12 +59,17 @@
   </script>
   
   <style>
+  /*  */
   .flex-grow {
     flex-grow: 1;
   }
  a, a.-webkit-any-link 
  {
   text-decoration: none;
+}
+/* 让el-menu-demo的height为100% */
+.el-menu-demo {
+  height: 100%;
 }
 
   </style>

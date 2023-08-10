@@ -1,13 +1,15 @@
 <template>
-  <NavBarPart/>
-  <router-view/>
+  <!-- <NavBarPart/> -->
+  <!-- <router-view/> -->
+  <CommonLayout/>
 </template>
 <script lang="ts">
-import NavBarPart from './components/Mainpage/NavBarPart.vue'
+// import NavBarPart from './components/Mainpage/NavBarPart.vue'
+import CommonLayout from './components/Mainpage/CommonLayout.vue'
 export default {
   name: 'App',
   components: {
-    NavBarPart
+    CommonLayout
   }
 }
 </script>

@@ -3,8 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import CommunityView from '../views/CommunityView.vue'
 import SignView from '../views/SignView.vue'
-
-
+import NotFound from '../views/NotFound.vue'
+import MatchHistory from '../views/MatchHistory.vue'
 const routes = [
   {
     path: '/',
@@ -25,7 +25,17 @@ const routes = [
     path: '/sign',
     name: 'sign',
     component: SignView
-  }
+  },
+  {
+    path: '/matchhistory',
+    name: 'matchhistory',
+    component: MatchHistory
+  },
+  { path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFound
+  },
+
 ]
 
 const router = createRouter({
