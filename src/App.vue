@@ -1,8 +1,16 @@
 <template>
-
+  <NavBarPart/>
   <router-view/>
 </template>
-
+<script lang="ts">
+import NavBarPart from './components/Mainpage/NavBarPart.vue'
+export default {
+  name: 'App',
+  components: {
+    NavBarPart
+  }
+}
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
