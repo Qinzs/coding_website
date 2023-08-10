@@ -22,3 +22,9 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### environment
+use vue3,typescript,element-plus,jquery
+login page, sign page, home page in views folder
+footer part, pk part in components
+
