@@ -27,7 +27,8 @@
         <el-checkbox label="Remember me" name="type" />
       </el-checkbox-group>
       </div>
-      <el-button>Cancel</el-button>
+      <el-button key="plain"
+      type="" text>Forget password</el-button>
 
     </el-form-item>
     <el-form-item>
