@@ -1,6 +1,7 @@
 <template>
   <div class="e-box">
     <div id="codeEditBox"></div>
+    <el-button type="primary" @click="submit">submit</el-button>
   </div>
 </template>
 
@@ -16,7 +17,7 @@ const editorInit = () => {
   nextTick(() => {
     !editor ? editor = monaco.editor.create(document.getElementById('codeEditBox') as HTMLElement, {
       value: text.value,
-      language: 'go',
+      language: 'python',
       automaticLayout: true,
       theme: 'vs-dark',
       readOnly: false,
@@ -36,6 +37,9 @@ editorInit();
 onBeforeUnmount(() => {
   editor.dispose();
 });
+const submit = () => {
+  console.log(text.value);
+}
 </script>
 
 <style scoped lang="scss">
@@ -48,10 +52,10 @@ onBeforeUnmount(() => {
 
 
 .e-box {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   box-sizing: border-box;
-  height: 100%;
+  height: 90%;
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
