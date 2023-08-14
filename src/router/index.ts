@@ -6,6 +6,7 @@ import SignView from '../views/SignView.vue'
 import NotFound from '../views/NotFound.vue'
 import MatchHistory from '../views/MatchHistory.vue'
 import ResetPassword from '../views/ResetPassword.vue'
+import codePartComponent from '../views/codePartComponent.vue'
 const routes = [
   {
     path: '/',
@@ -36,6 +37,11 @@ const routes = [
     path: '/resetpass',
     name: 'findpass',
     component: ResetPassword
+  },
+  {
+    path: '/code',
+    name: 'code',
+    component: codePartComponent
   },
   { path: '/:pathMatch(.*)*',
     name: 'not-found',
