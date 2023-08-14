@@ -5,6 +5,7 @@ import CommunityView from '../views/CommunityView.vue'
 import SignView from '../views/SignView.vue'
 import NotFound from '../views/NotFound.vue'
 import MatchHistory from '../views/MatchHistory.vue'
+import ResetPassword from '../views/ResetPassword.vue'
 const routes = [
   {
     path: '/',
@@ -30,6 +31,11 @@ const routes = [
     path: '/matchhistory',
     name: 'matchhistory',
     component: MatchHistory
+  },
+  {
+    path: '/resetpass',
+    name: 'findpass',
+    component: ResetPassword
   },
   { path: '/:pathMatch(.*)*',
     name: 'not-found',

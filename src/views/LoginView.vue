@@ -28,7 +28,7 @@
       </el-checkbox-group>
       </div>
       <el-button key="plain"
-      type="" text>Forget password</el-button>
+      type="" text @click = "resetpass">Forget password</el-button>
 
     </el-form-item>
     <el-form-item>
@@ -41,7 +41,9 @@
 </template>
 <script lang="ts" setup>
 import { reactive } from 'vue'
-interface RuleForm {
+import { useRouter } from 'vue-router';
+  const $router = useRouter();
+  interface RuleForm {
   name: string
   region: string
   count: string
@@ -63,6 +65,9 @@ const ruleForm = reactive<RuleForm>({
   resource: '',
   desc: '',
 })
+const resetpass = () => {
+  $router.push({ name: 'findpass' })
+}
 </script>
 <style scoped>
 .text {
@@ -75,11 +80,13 @@ const ruleForm = reactive<RuleForm>({
 .login {
   align-items: center;
   height: 100%;
+  overflow: hidden;
 }
 .box-card {
   width: 50%;
   height: 80%;
-  margin: 5% auto;
+  margin: 3% auto;
+  border-radius: 15px;
 
 }
 </style>
