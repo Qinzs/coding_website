@@ -28,3 +28,6 @@ use vue3,typescript,element-plus,jquery
 login page, sign page, home page in views folder
 footer part, pk part in components
 
+### group assign
+front end: congjia hu, zeran qiu
+back end: wenming zhao, bin liu
