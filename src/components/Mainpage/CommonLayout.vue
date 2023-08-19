@@ -45,6 +45,7 @@ html, body, #app {
     background-color: #eef1f6;
     height: 72%;  /* 设置为60%的高度 */
     padding: 0;
+    overflow: hidden;
 }
 
 .common-layout .el-footer {

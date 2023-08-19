@@ -11,7 +11,21 @@
         <span>Code Question</span>
       </div>
     </template>
-    <div v-for="o in 4" :key="o" class="text item">{{ 'List item ' + o }}</div>
+    <div class="text item">Given an integer array nums and an integer target value target, you find the two integers in the array that sum to the target value target and return their array subscripts.
+
+You can assume that each input will correspond to only one answer. However, the same element in the array cannot be repeated in the answer.
+
+You can return the answers in any order.</div>
+
+
+<div class="text item" style="font-weight: bold;" >Example 1:</div>
+<div class="text item">Input: nums = [2,7,11,15], target = 9
+<br>
+Output: [0,1]
+<br>
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</div>
+
+    
   </el-card>
     </div>
   </div>
