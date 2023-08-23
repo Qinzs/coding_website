@@ -8,7 +8,7 @@
       <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span>Code Question</span>
+        <span>Code Questions</span>
       </div>
     </template>
     <div class="text item">Given an integer array nums and an integer target value target, you find the two integers in the array that sum to the target value target and return their array subscripts.
