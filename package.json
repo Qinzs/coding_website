@@ -8,10 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@smallwei/avue": "^3.2.19",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
     "element-plus": "^2.3.9",
     "jquery": "^3.7.0",
+    "jwchat": "^1.0.12",
     "monaco-editor": "^0.41.0",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@types/smallwei__avue": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

@@ -7,6 +7,7 @@ import NotFound from '../views/NotFound.vue'
 import MatchHistory from '../views/MatchHistory.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 import codePartComponent from '../views/codePartComponent.vue'
+import chatComponent from '../views/chatComponent.vue'
 const routes = [
   {
     path: '/',
@@ -47,6 +48,11 @@ const routes = [
     name: 'not-found',
     component: NotFound
   },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: chatComponent
+  }
 
 ]
 
