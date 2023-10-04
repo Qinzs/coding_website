@@ -1,138 +1,211 @@
 <template>
-<avue-chat ref="chat"
-             :keylist="keylist"
-             @keysend="handleSubmit"
-             @keyadd="handleAdd"
-             :config="config"
-             width="420"
-             height="560"
-             @submit="handleSubmit"
-             v-model="msg"
-             :list="list">
-    <h1 style="color:red">自定义内容</h1>
-    <template #menu>
-      <el-tag>自定义内容</el-tag>
-    </template>
-  </avue-chat>
+<NaiveChat
+  ref="naiveChatRef"
+  :user-info="userInfo"
+  @pull-message="pullMessage"
+  @send="send"
+/>
 </template>
-<script>
-export default {
-  data () {
-    return {
-      config: {
-        img: 'https://gitee.com/uploads/61/632261_smallweigit.jpg',
-        name: 'avue自助机器人',
-        dept: '这是一个神奇的前端框架'
-      },
-      keylist: [
-        '您好，欢迎光临***品牌旗舰店，很高兴为您服务！/:^_^',
-        '您好，/:^_^不好意思让您久等了，您看中这款是吗（截图发给客户看），要什么颜色的呢？',
-        '亲，这款是打特价的价格呢，已经是最低价了哦，现在全场三件（根据具体情况而定）包邮哦，您挑多一件了',
-        '您好，欢迎光临***品牌旗舰店，很高兴为您服务！/:^_^',
-        '您好，/:^_^不好意思让您久等了，您看中这款是吗（截图发给客户看），要什么颜色的呢？',
-        '亲，这款是打特价的价格呢，已经是最低价了哦，现在全场三件（根据具体情况而定）包邮哦，您挑多一件了'
-      ],
-      msg: '这是你想说的话～。～',
-      list: [{
-        "date": "2019-07-17 23:25:15",
-        "text": {
-          "text": '1111'
-        },
-        "mine": true,
-        "img": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1547542562834&di=4d469265c6847a8f29393fe1038c64c8&imgtype=0&src=http%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_jpg%2FhFB4FUPIIlJSIN5vlQwX2OGlW03Oic9SdtXoOAgMmNBYxfpibmxyG6C0rf7Yml1YKQKrLbet5C4ebpmzGOJZ8icEQ%2F640%3Fwx_fmt%3Djpeg\t",
-        "name": "我"
-      }, {
-        "date": "2019-07-17 23:25:15",
-        "text": {
-          "text": "你说啥我听不懂啊"
-        },
-        "mine": false,
-        "img": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1547542538742&di=33c9b3d1ad6bdfe87eb19e44c8d0da04&imgtype=0&src=http%3A%2F%2Fcyjmw.shengyilu.com%2Fskin%2Findex%2Fimages_four%2Fpic_fi_32.png\t",
-        "name": "云集汇通自助客服"
-      }]
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import type { Message } from 'naive-chat'
+import type { PullMessageOption, SendOption } from 'naive-chat'
+import { NaiveChat,NaiveChatType,Contact} from 'naive-chat'
+
+let socket;
+
+const connectWebSocket = () => {
+  // 创建 WebSocket 连接
+  const userId = "12345"; // 这应该是动态获取的用户ID
+ socket = new WebSocket(`ws://localhost:3000/ws?userId=${userId}`);
+
+
+  //socket = new WebSocket('ws://localhost:3000/ws');
+
+  // 连接成功事件
+  socket.onopen = (event) => {
+    console.log('WebSocket 连接成功:', event);
+  };
+
+  // 接收消息事件
+  socket.onmessage = (event) => {
+    console.log('接收到的数据:', event.data);
+  };
+
+  // 连接错误事件
+  socket.onerror = (event) => {
+    console.error('WebSocket 错误:', event);
+  };
+
+  // 断开连接事件
+  socket.onclose = (event) => {
+    if (event.wasClean) {
+      console.log(`连接正常关闭, code=${event.code}, reason=${event.reason}`);
+    } else {
+      console.error('连接异常断开');
     }
+  };
+};
+
+// 在 Vue 的 onMounted 钩子或其他适当的地方调用此函数
+connectWebSocket();
+const naiveChatRef = ref<NaiveChatType>()
+
+// user info
+const userInfo = {
+  nickname: 'King',
+  avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+  id: 1000,
+}
+
+const contacts = ref<Contact[]>([
+  {
+    id: 2,
+    nickname: 'yanping',
+    avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+    lastMessage: '111',
+    lastTime: Date.now(),
+    index: 'A',
+  }
+    ,
+    {
+    id: 3,
+    nickname: 'yanping2',
+    avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+    lastMessage: '111',
+    lastTime: Date.now(),
+    index: 'A',
+  }
+])
+let date = new Date();
+date.setHours(14, 0, 0, 0); // 设置时间为14:00:00.000
+let timestamp = date.getTime();
+let messages: Message[] = [
+{
+    id: '11sasad1',
+    content: '123131',
+    type: 'text',
+    toContactId: 1000,
+    status: 'success',
+    sendTime: timestamp,
+    fromUser: {
+      id: 2,
+      nickname: 'yanping',
+      avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+    },
+    
   },
-  mounted () {
-    this.handleSubmit('如何贷款')
+  {
+    id: '11sasad12',
+    content: '是大啊都是',
+    type: 'text',
+    toContactId: 1000,
+    status: 'success',
+    sendTime: Date.now(),
+    fromUser: {
+      id: 2,
+      nickname: 'yanping',
+      avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+    },
+    
   },
-  methods: {
-    handleAdd (msg) {
-      this.keylist.push(msg);
-      this.$message.success('快捷回复语添加成功')
+  {
+    id: '1000',
+    content: 'wijnji1111',
+    type: 'text',
+    toContactId: 1000,
+    status: 'success',
+    sendTime: timestamp,
+    fromUser: {
+      id: 3,
+      nickname: 'yanping',
+      avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
     },
-    handleSubmit (msg) {
-      this.msg = msg || this.msg
-      this.$refs.chat.pushMsg({
-        mine: true,
-        text: this.msg
-      });
-      this.$refs.chat.rootSendMsg(this.getMsg(this.msg));
-      this.msg = '';
+    
+  }
+
+]
+const message1: Message[] = [
+{
+    id: '1001110',
+    content: 'wijnji',
+    type: 'text',
+    toContactId: 3,
+    status: 'success',
+    sendTime: timestamp,
+    fromUser: {
+      id: 3,
+      nickname: 'yanping',
+      avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
     },
-    //智能题库
-    getMsg (msg) {
-      if (msg === 'wel') {
-        return {
-          text: '您好，我是银行小客服，有什么可以帮助你的?',
-          list: [{
-            text: "如何申请贷款？",
-            ask: '如何贷款'
-          }]
-        };
-      } else if (msg === '如何贷款') {
-        return {
-          text: `我行提供了如下贷款方式
-            图片
-            ${this.$refs.chat.getDetail({
-            type: 'img',
-            src: 'https://avuejs.com/images/logo-bg.jpg'
-          })}
-            视频
-            ${this.$refs.chat.getDetail({
-            type: 'video',
-            src: 'https://www.w3school.com.cn/i/movie.ogg'
-          })}
-            语音
-            ${this.$refs.chat.getDetail({
-            type: 'audio',
-            src: 'https://www.w3school.com.cn/i/horse.ogg'
-          })}
-            文件
-            ${this.$refs.chat.getDetail({
-            type: 'file',
-            name: 'Avue的官网文件.doc',
-            src: 'https://www.w3school.com.cn/i/movie.ogg'
-          })}
-            地图
-            ${this.$refs.chat.getDetail({
-            type: 'map',
-            longitude: '116.307852',
-            latitude: '40.057031',
-            address: '这是一个很长很长这是一个很长很长的地址',
-            src: 'https://www.w3school.com.cn/i/movie.ogg'
-          })}`,
-          list: [{
-            text: "1.微信线上申请",
-            ask: '微信线上申请'
-          }, {
-            text: "2.电话申请",
-            ask: '电话申请'
-          }, {
-            text: "3.到网点申请",
-            ask: '到网点申请'
-          }]
-        }
-      } else if (msg === '微信线上申请') {
-        return '可关注***银行微信公众号，点击我要贷款，身份认证，发起申请。'
-      } else if (msg === '电话申请') {
-        return '可拨打24小时热线96668或********'
-      } else if (msg === '到网点申请') {
-        return '可就近选择网点，附网点列表及联系人'
-      }
-      return {
-        text: '你说啥我听不懂啊'
-      }
-    },
+    
+  }
+]
+onMounted(() => {
+  naiveChatRef.value?.initContacts(contacts.value)  
+})
+//展示信息的逻辑：用websocket接收到的信息，根据id筛选出来，然后展示出来
+//webskect的信息是一个数组，每次接收到信息，都要把信息放到数组里面，然后再筛选出来
+//用appendMessage方法，可以提示信息，传入的是这个id的数组的最后一条信息
+//顺序：先listen websocket，然后当获取到信息时，放到数组里，然后筛选出来，然后展示出来，
+//然后当用户点击pullmessage，就会调用pullmessage方法，然后把筛选出来的信息传入到next方法里面，然后就会在聊天框里渲染出来
+const showMessages = ref<Message[]>([]);
+  function filterMessagesByContactId(messages: Message[], contactId: number): Message[] 
+  {
+    //把对应的id的信息筛选出来，然后message里面删除掉
+    const relevantMessages = messages.filter(message => message.fromUser.id === contactId);
+    return relevantMessages;
+}
+function pullMessage({ next, contactId }: PullMessageOption) {
+  console.log(contactId, 'messages')
+  const relevantMessages = filterMessagesByContactId(messages, contactId);
+  messages = messages.filter(message => message.fromUser.id !== contactId);
+  showMessages.value = relevantMessages;
+  console.log(next, 'showMessages')
+
+  if ( showMessages.value.length > 0 ) {
+      next(showMessages.value)
+      console.log(message1)
+      naiveChatRef.value?.appendMessage(message1[0]);
+  }
+  else {
+    asyncFn(() => {
+      next([])
+    })
   }
 }
+
+function asyncFn(fn: () => void) {
+  setTimeout(() => {
+    fn()
+  }, 100)
+}
+
+function send({ message, next }: SendOption) {
+  asyncFn(() => {
+    const messageString = JSON.stringify(message);
+
+// 通过WebSocket发送消息到后端
+socket.send(messageString);
+
+    console.log('message',message)
+    next({
+      id: message.id,
+      toContactId: message.toContactId,
+      status: 'success',  
+    })
+  })
+}
+
+
+
+
+
+
+
 </script>
+<style>
+.naive-chat {
+  height: 100%;
+}
+</style>

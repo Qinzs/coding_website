@@ -4,7 +4,7 @@ import Avue from '@smallwei/avue'
 import App from './App.vue'
 import router from './router'
 import 'element-plus/dist/index.css'
-
+import 'naive-chat/dist/style.css'
 import '@smallwei/avue/lib/index.css';
 
 createApp(App).use(router).use(ElementPlus).use(Avue).mount('#app')
