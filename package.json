@@ -11,7 +11,7 @@
     "@smallwei/avue": "^3.2.19",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
-    "element-plus": "^2.3.9",
+    "element-plus": "^2.3.14",
     "jquery": "^3.7.0",
     "jwchat": "^1.0.12",
     "monaco-editor": "^0.41.0",

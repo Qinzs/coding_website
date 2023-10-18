@@ -9,6 +9,3 @@ import '@smallwei/avue/lib/index.css';
 
 createApp(App).use(router).use(ElementPlus).use(Avue).mount('#app')
 
-
-
-

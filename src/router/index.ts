@@ -7,6 +7,7 @@ import NotFound from '../views/NotFound.vue'
 import MatchHistory from '../views/MatchHistory.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 import codePartComponent from '../views/codePartComponent.vue'
+import CodeSubmitView from '../views/CodeSubmitView.vue'
 import chatComponent from '../views/chatComponent.vue'
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
     path: '/code',
     name: 'code',
     component: codePartComponent
+  },
+  {
+    path: '/codeSubmit',
+    name: 'codeSubmit',
+    component: CodeSubmitView
   },
   { path: '/:pathMatch(.*)*',
     name: 'not-found',
