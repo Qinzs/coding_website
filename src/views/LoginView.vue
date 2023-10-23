@@ -78,6 +78,7 @@ const handleLogin = async () => {
   //现在先模拟一下用户信息
   const response = {
       userInfo: {
+      id: 1,
       name: 'John Doe',
       email: '1',
       phone: '1234567890'
