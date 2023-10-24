@@ -18,10 +18,13 @@
 
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import type { Message } from 'naive-chat'
 import type { PullMessageOption, SendOption } from 'naive-chat'
 import { NaiveChat,NaiveChatType,Contact} from 'naive-chat'
+
+import { useStore } from 'vuex';
+const store = useStore();
 
 let socket;
 
@@ -41,7 +44,7 @@ if (div) {
 let testpicture = ''
 const connectWebSocket = () => {
   // 创建 WebSocket 连接
-  const userId = "1"; // 这应该是动态获取的用户ID
+  const userId = store.state.user.id; // 这应该是动态获取的用户ID
  socket = new WebSocket(`ws://localhost:3000/ws?userId=${userId}`);
 
   // socket = new WebSocket('ws://localhost:3000/ws');
@@ -102,7 +105,7 @@ document.body.appendChild(img);
 
     // 打印格式化的日期时间
     // console.log(date1.toLocaleString());
-    naiveChatRef.value?.appendMessage(message1[0]);
+    //naiveChatRef.value?.appendMessage(message1[0]);
 
 };
 
@@ -132,26 +135,59 @@ const userInfo = {
   avatar: testpicture,
   id: 1000,
 }
+//向http://localhost:3000/api1/users/1/contacts发送请求，获取到联系人的信息
+const contacts = ref<Contact[]>([]);
+
+const fetchContacts = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api1/users/1/contacts');
+        if (!response.ok) {
+            throw new Error('Failed to fetch contacts');
+        }
+        const data = await response.json();
+        console.log(data)
+         // eslint-disable-next-line 
+        contacts.value = data.map(contact => ({
+            id: contact.contactId, // 这取决于你的API返回的数据结构
+            // ... 其他字段，例如nickname, avatar等
+            nickname: contact.username,
+            avatar: 'data:image/jpg;base64,' + contact.profile,
+            lastMessage: '111',
+    lastTime: Date.now(),
+    index: 'A',
+        }));
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
+    }
+    console.log(contacts.value)
+    naiveChatRef.value?.initContacts(contacts.value)  
+
+}
+
+// 调用函数以获取联系人
+fetchContacts();
+
 // contacts info
-const contacts = ref<Contact[]>([
-  {
-    id: 2,
-    nickname: 'yanping',
-    avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
-    lastMessage: '111',
-    lastTime: Date.now(),
-    index: 'A',
-  }
-    ,
-    {
-    id: 3,
-    nickname: 'yanping2',
-    avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
-    lastMessage: '111',
-    lastTime: Date.now(),
-    index: 'A',
-  }
-])
+// const contacts = ref<Contact[]>([
+//   {
+//     id: 2,
+//     nickname: 'yanping',
+//     avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+//     lastMessage: '111',
+//     lastTime: Date.now(),
+//     index: 'A',
+//   }
+//     ,
+//     {
+//     id: 3,
+//     nickname: 'yanping2',
+//     avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
+//     lastMessage: '111',
+//     lastTime: Date.now(),
+//     index: 'A',
+//   }
+// ])
+// console.log(contacts.value)
 //simulate messages history
 let date = new Date();
 date.setHours(14, 0, 0, 0); // 设置时间为14:00:00.000
@@ -167,7 +203,7 @@ let messages: Message[] = [
     sendTime: timestamp,
     fromUser: {
       id: 2,
-      nickname: 'yanping',
+      nickname: 'Bob',
       avatar: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
     },
     
@@ -211,7 +247,7 @@ let messages: Message[] = [
     sendTime: timestamp,
     fromUser: {
       id: 3,
-      nickname: 'yanping',
+      nickname: 'Charlie',
       avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
     },
     
@@ -249,9 +285,9 @@ const message1: Message[] = [
   }
 ]
 //初始化联系人
-onMounted(() => {
-  naiveChatRef.value?.initContacts(contacts.value)  
-})
+// onMounted(() => {
+//   naiveChatRef.value?.initContacts(contacts.value)  
+// })
 //展示信息的逻辑：用websocket接收到的信息，根据id筛选出来，然后展示出来
 //webskect的信息是一个数组，每次接收到信息，都要把信息放到数组里面，然后再筛选出来
 //用appendMessage方法，可以提示信息，传入的是这个id的数组的最后一条信息

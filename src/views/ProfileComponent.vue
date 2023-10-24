@@ -194,6 +194,7 @@ if (store.state.user) {
   console.log(store.state.user.name);
 } else {
   console.log('User is not defined');
+
 }
 
 
@@ -229,7 +230,12 @@ let UserInfo = ref({
     hard: 45,
     overallsoved: 0,
 })
+
 UserInfo.value.overallsoved = UserInfo.value.easy + UserInfo.value.medium + UserInfo.value.hard
+//根据store中的数据，更新UserInfo
+UserInfo.value.name = store.state.user.name
+UserInfo.value.email = store.state.user.email
+UserInfo.value.lastLogin = store.state.user.lastLoginDate
 
 // 
 const communityIcon = ref({
