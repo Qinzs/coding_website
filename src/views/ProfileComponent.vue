@@ -185,9 +185,10 @@
 </template>
   
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref ,onMounted} from 'vue'
 import { Calendar, FolderChecked, ChatDotRound, SuccessFilled, Star, CircleCloseFilled } from '@element-plus/icons-vue'
 import { useStore } from 'vuex';
+
 const store = useStore();
 if (store.state.user) {
   console.log(store.state.user.name);
@@ -286,9 +287,9 @@ const subscribeInfo = ref({
     ]
 }
 )
+onMounted (() => {
+    // 无需再使用DOMContentLoaded
 
-//change the subscribeInfo to the following format
-document.addEventListener('DOMContentLoaded', function () {
     let divs1 = document.querySelectorAll('.data-price');
     let targetDiv1 = divs1[0];  // 选择第一个div
 
@@ -304,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function () {
         targetDiv1.style.backgroundColor = "#fff";
         targetDiv1.style.alignItems = "center";
     }
+
     let targetDiv = document.querySelector('.data-price div.el-row:first-of-type');
 
     if (targetDiv) {
@@ -314,28 +316,12 @@ document.addEventListener('DOMContentLoaded', function () {
             targetDiv3.style.flex = "0 0 33%";
         });
         //show something for current subscription
-    //     let targetDiv3 = targetDiv.querySelectorAll('.el-col.el-col-24.el-col-xs-12.el-col-sm-6.el-col-md-6');
-    //     let targetDiv4 = targetDiv3[0];
-    //     if (targetDiv4) {
-    //         let listElement = targetDiv4.querySelector('.title');
-    //         if (listElement) {
-    //     let icon = document.createElement('el-icon');
-        
-    //     // 设置样式
-
-    //     icon.style.display = "inline-block";
-    //     icon.setAttribute('color', 'red');
-    //     icon.setAttribute('size', '20');
-    //     // 设置内部内容
-    //     icon.innerHTML = '<successfilled></successfilled>';
-        
-    //     listElement.appendChild(icon);
-    // }
-    //     }
-
     }
 
 });
+
+
+
 
 
 </script>

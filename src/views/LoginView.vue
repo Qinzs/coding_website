@@ -15,11 +15,11 @@
     style="max-width: 460px; margin: 0 0 0 10%;"
     
   >
-    <el-form-item label="Email">
-      <el-input  />
+    <el-form-item label="username">
+      <el-input v-model="loginForm.username" />
     </el-form-item>
     <el-form-item label="Password">
-      <el-input  />
+      <el-input v-model="loginForm.password" type="password" />
     </el-form-item>
     <el-form-item prop="type">
       <div style="margin-right: auto;">
@@ -32,7 +32,7 @@
 
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size = "large">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;login&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-button>
+      <el-button type="primary" size="large" @click="handleLogin">Login</el-button>
     </el-form-item>
   </el-form>
 </el-card>
@@ -72,23 +72,50 @@ const resetpass = () => {
 }
 const store = useStore();
 
-const handleLogin = async () => {
-  // 执行登录逻辑，例如API调用
-  
-  //现在先模拟一下用户信息
-  const response = {
-      userInfo: {
-      id: 1,
-      name: 'John Doe',
-      email: '1',
-      phone: '1234567890'
-    }
-  }
-    // 如果登录成功，调用Vuex action来保存用户信息
-    store.dispatch('loginUser', response.userInfo);
+// 添加登录表单的接口
+interface LoginForm {
+    username: string
+    password: string
 }
 
-handleLogin()
+const loginForm = reactive<LoginForm>({
+    username: '',
+    password: ''
+});
+
+// 修改handleLogin函数，让其实现真正的登录逻辑
+const handleLogin = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/users/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: loginForm.username,
+                password: loginForm.password
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // 如果登录成功，调用Vuex action来保存用户信息
+            store.dispatch('loginUser', {
+                id: data.id,
+                name: data.username.trim(),
+                email: data.email.trim(),
+                lastLoginDate: data.lastLoginDate
+            });
+            
+            $router.push({ name: 'profile' }); // 假设登录成功后要跳转到dashboard路由
+        } else {
+            console.error('Login failed:', await response.text());
+        }
+    } catch (error) {
+        console.error('Failed to login:', error);
+    }
+}
+
 </script>
 <style scoped>
 .text {

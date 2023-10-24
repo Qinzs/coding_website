@@ -25,21 +25,25 @@ logo
         Match History
       </el-menu-item>
   
-      <el-menu-item index="sign">
-        Sign
-      </el-menu-item>
-      <el-menu-item index="login">
-        Login
-      </el-menu-item>
+    <!-- Show when NOT logged in -->
+    <el-menu-item v-if="!isLogged" index="sign">Sign</el-menu-item>
+    <el-menu-item v-if="!isLogged" index="login">Login</el-menu-item>
+
+    <!-- Show when logged in -->
+    <el-menu-item v-if="isLogged" index="chat">Chat</el-menu-item>
+    <el-menu-item v-if="isLogged" index="profile">Profile</el-menu-item>
     </el-menu>
   </template>
   
   <script lang="ts" setup>
-  import { ref } from 'vue'
-// import { useStore } from "vuex";
+  import { ref,watch } from 'vue'
+import { useStore } from "vuex";
 import { useRouter } from 'vue-router';
   const activeIndex = ref('1')
   const $router = useRouter();
+  const store = useStore();
+  const isLogged = ref(store.getters.isUserLoggedIn);  // 初始化为 Vuex store 中的状态
+
   const handleSelect = (key: string, keyPath: string[]) => {
     //跳转到对应的页面
     //如果key是0，也跳转到home页面
@@ -55,7 +59,10 @@ import { useRouter } from 'vue-router';
         //     store.dispatch("logout");
         // }
 
-
+// 监听 Vuex store 中的登录状态，并同步更新到 isLogged
+watch(() => store.getters.isUserLoggedIn, newValue => {
+  isLogged.value = newValue;
+});
   </script>
   
   <style>
