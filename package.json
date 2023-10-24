@@ -15,16 +15,21 @@
     "jquery": "^3.7.0",
     "jwchat": "^1.0.12",
     "monaco-editor": "^0.41.0",
+    "naive-chat": "^0.1.12",
+    "stompjs": "^2.3.3",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
     "vue-loader": "^17.2.2",
     "vue-router": "^4.0.3",
-    "vue-template-compiler": "^2.7.14"
+    "vue-template-compiler": "^2.7.14",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@types/smallwei__avue": "^3.0.1",
+    "@types/sockjs-client": "^1.5.1",
+    "@types/stompjs": "^2.3.5",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
@@ -37,6 +42,7 @@
     "eslint-plugin-vue": "^8.7.1",
     "sass": "^1.65.1",
     "sass-loader": "^13.3.2",
+    "sockjs-client": "^1.6.1",
     "typescript": "~4.5.5"
   },
   "eslintConfig": {

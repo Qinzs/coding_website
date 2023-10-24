@@ -26,7 +26,7 @@
         </div>
       </div>
       <!-- 第二部分 -->
-      <div class="part-two">
+      <div class="part-two" style="text-align: center;">
         2023 king of Code. All right reserved      </div>
     </div>
   </template>

@@ -42,6 +42,8 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
   const $router = useRouter();
   interface RuleForm {
   name: string
@@ -68,6 +70,25 @@ const ruleForm = reactive<RuleForm>({
 const resetpass = () => {
   $router.push({ name: 'findpass' })
 }
+const store = useStore();
+
+const handleLogin = async () => {
+  // 执行登录逻辑，例如API调用
+  
+  //现在先模拟一下用户信息
+  const response = {
+      userInfo: {
+      id: 1,
+      name: 'John Doe',
+      email: '1',
+      phone: '1234567890'
+    }
+  }
+    // 如果登录成功，调用Vuex action来保存用户信息
+    store.dispatch('loginUser', response.userInfo);
+}
+
+handleLogin()
 </script>
 <style scoped>
 .text {

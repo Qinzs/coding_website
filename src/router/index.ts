@@ -9,6 +9,7 @@ import ResetPassword from '../views/ResetPassword.vue'
 import codePartComponent from '../views/codePartComponent.vue'
 import CodeSubmitView from '../views/CodeSubmitView.vue'
 import chatComponent from '../views/chatComponent.vue'
+import ProfileComponent from '../views/ProfileComponent.vue'
 const routes = [
   {
     path: '/',
@@ -58,6 +59,11 @@ const routes = [
     path: '/chat',
     name: 'chat',
     component: chatComponent
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileComponent
   }
 
 ]
