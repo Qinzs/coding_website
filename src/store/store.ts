@@ -10,6 +10,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  lastLoginDate: Date;
   // ...其他属性
 }
 
@@ -28,6 +29,13 @@ export default createStore<State>({
       // 登录逻辑
       commit('SET_USER', userInfo);
       console.log('登录成功');
+    }
+
+  
+  },
+  getters: {
+    isUserLoggedIn: (state) => {
+      return state.user !== null;
     }
   }
 });
