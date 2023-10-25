@@ -35,9 +35,6 @@
                         Email: {{ UserInfo.email}}
                     </div>
                     <div style="margin-top: 5%;color:#262626bf;font-weight: 500;">
-                        Phone: {{ UserInfo.phone}}
-                    </div>
-                    <div style="margin-top: 5%;color:#262626bf;font-weight: 500;">
                         Last login: {{ UserInfo.lastLogin}}
                     </div>
                 </div>
@@ -185,7 +182,7 @@
 </template>
   
 <script lang="ts" setup>
-import { ref ,onMounted} from 'vue'
+import { ref ,onMounted,computed } from 'vue'
 import { Calendar, FolderChecked, ChatDotRound, SuccessFilled, Star, CircleCloseFilled } from '@element-plus/icons-vue'
 import { useStore } from 'vuex';
 
@@ -202,9 +199,7 @@ if (store.state.user) {
 const total_num = ref(100)
 //maximum num for recentMatch is 3
 const recentMatch = ref([
-    { questionname: "Question1: Minimum Score By Changing Two Elements", result: 0, date: "2021/10/10 22:99" },
-    { questionname: "Question2: Maximum Score By Changing Two Elements", result: 1, date: "2021/10/10 22:99" },
-    { questionname: "Question1: Minimum Score By Changing Two Elements", result: 0, date: "2021/10/10 22:99" },
+
 ])
 const recentSolutions = ref([
     { questionname: "Question1: Minimum Score By Changing Two Elements", result: 0, likes: 88, date: "2021/10/10 22:99" },
@@ -222,23 +217,99 @@ let UserInfo = ref({
     email: '159xxxx@qq.com',
     phone: '159xxxxxxx',
     lastLogin: '2021-10-10 10:10:10',
-    view: 12877,
-    discussions: 200,
-    answered: 200,
+    view: 0,
+    discussions: 0,
+    answered: 0,
     easy: 80,
     medium: 33,
     hard: 45,
     overallsoved: 0,
 })
+//请求http://localhost:3000/api1/users/profile/{store.state.user.id}，获取用户信息
+const fetchUserProfile = async () => {
+      const userId = store.state.user.id;
+      console.log('userId', userId);
+      try {
+        const response = await fetch(`http://localhost:3000/api1/users/profile/${userId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('response', data);
+        UserInfo.value.name = data.username;
+        UserInfo.value.view = data.totalViews;
+        UserInfo.value.discussions = data.publishesCount;
+        UserInfo.value.answered = data.answersCount;
+        UserInfo.value.email = data.email;
+        UserInfo.value.lastLogin = data.lastLoginDate;
+
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    onMounted(fetchUserProfile);
 
 UserInfo.value.overallsoved = UserInfo.value.easy + UserInfo.value.medium + UserInfo.value.hard
 //根据store中的数据，更新UserInfo
 UserInfo.value.name = store.state.user.name
 UserInfo.value.email = store.state.user.email
 UserInfo.value.lastLogin = store.state.user.lastLoginDate
+//请求http://localhost:3000/api1/users/profile/{store.state.user.id}/publishes，获取用户信息
+const fetchUserDetail = async () => {
+    const userId = store.state.user.id;
+    console.log('userId', userId);
+    try {
+        const response = await fetch(`http://localhost:3000/api1/users/profile/${userId}/publishes`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('response', data);
 
+        let temp = data.matches.length > 3 ? data.matches.slice(-3) : data.matches;
+        let temp1 = data.answers.length > 3 ? data.answers.slice(-3) : data.answers;
+        let temp2 = data.publishes.length > 3 ? data.publishes.slice(-3) : data.publishes;
+        recentMatch.value = temp.map(item => ({
+            result: item.winnerId === userId ? 1 : 0,
+            questionname: item.problemName,
+            date: formatDate(item.startTime)
+        }));
+        recentSolutions.value = temp1.map(item => ({
+            questionname: item.Content,
+            date: formatDate(item.dateTime),
+            likes: item.answerID
+        }));
+        recentDiscussions.value = temp2.map(item => ({
+            questionname: item.Title,
+            date: formatDate(item.answerLatest),
+            replies: item.answerNumber
+        }));
+    } catch (error) {
+        console.error('Error fetching user detail:', error);
+    }
+};
+
+
+ function formatDate(isoString) {
+    const date = new Date(isoString);
+
+    // 使用padStart确保日期和时间部分始终为两位数
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
+}
+
+
+
+
+    onMounted(fetchUserDetail);
 // 
-const communityIcon = ref({
+const communityIcon = computed(() => ({
     span: 7,
     data: [
         {
@@ -266,8 +337,7 @@ const communityIcon = ref({
             target: '_blank'
         },
     ]
-}
-)
+}));
 const subscribeInfo = ref({
     span: 6,
     data: [
