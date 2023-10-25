@@ -45,7 +45,7 @@ let testpicture = ''
 const connectWebSocket = () => {
   // 创建 WebSocket 连接
   const userId = store.state.user.id; // 这应该是动态获取的用户ID
- socket = new WebSocket(`ws://localhost:3000/ws?userId=${userId}`);
+ socket = new WebSocket(`ws://localhost:3000/ws/chat?userId=${userId}`);
 
   // socket = new WebSocket('ws://localhost:3000/ws');
 
