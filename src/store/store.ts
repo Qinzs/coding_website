@@ -28,6 +28,8 @@ export default createStore<State>({
     loginUser({ commit }, userInfo: User) {
       // 登录逻辑
       commit('SET_USER', userInfo);
+            localStorage.setItem('id', userInfo.id.toString());
+      localStorage.setItem('name', userInfo.name.toString());
       console.log('登录成功');
     }
 
