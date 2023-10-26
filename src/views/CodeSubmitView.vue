@@ -6,13 +6,51 @@
       </div>
       <div class="description">
         <el-card class="box-card">
-        <template #header>
-            <div class="card-header">
-            <span>Code Quesstions</span>
-            </div>
-        </template>
             <el-row :gutter="16">
-            <el-col :span="8">
+              <el-col :span="6">
+              <div class="statistic-card">
+                <el-statistic value="Accept">
+                <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                    Submit Status
+                    <el-tooltip
+                        effect="dark"
+                        content="Number of users who logged into the product in one day"
+                        placement="top"
+                    >
+                        <el-icon style="margin-left: 4px" :size="12">
+                        <Warning />
+                        </el-icon>
+                    </el-tooltip>
+                    </div>
+                </template>
+                </el-statistic>
+            </div>
+            </el-col>
+            
+            <el-col :span="6">
+              <div class="statistic-card">
+                  <el-statistic value="Win">
+                  <template #title>
+                      <div style="display: inline-flex; align-items: center">
+                      PK Result
+                      <el-tooltip
+                          effect="dark"
+                          content="Number of users who logged into the product in one day"
+                          placement="top"
+                      >
+                          <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                          </el-icon>
+                      </el-tooltip>
+                      </div>
+                  </template>
+                  </el-statistic>
+              </div>
+            
+            </el-col>
+
+            <el-col :span="6">
             <div class="statistic-card">
                 <el-statistic :value="98500">
                 <template #title>
@@ -44,9 +82,8 @@
                 </div>
             </div>
             </el-col>
-            <el-col :span="6"></el-col>
 
-            <el-col :span="8">
+            <el-col :span="6">
             <div class="statistic-card">
                 <el-statistic :value="693700">
                 <template #title>

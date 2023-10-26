@@ -21,7 +21,7 @@
       </div>
     </el-col>
     <el-col :span="8">
-      <div class="statistic-card">
+      <!-- <div class="statistic-card">
         <el-statistic :value="693700" :value-style="{color: 'rgb(201, 214, 214)'}">
           <template #title>
             <div style="display: inline-flex; align-items: center; color: rgb(149, 160, 160);">
@@ -38,7 +38,7 @@
             </div>
           </template>
         </el-statistic>
-      </div>
+      </div> -->
     </el-col>
     <el-col :span="8">
       <div class="statistic-card">

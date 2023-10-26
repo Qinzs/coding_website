@@ -5,12 +5,12 @@
         <el-col :span="0.5"><div class="grid-content ep-bg-purple" /></el-col>
         <el-col :span="8"><div class="grid-content ep-bg-purple" />
 
-          <el-carousel :interval="5000"
-          height="450px"
-          :autoplay="true"
-          >
-            <el-carousel-item v-for="item in imageSet" :key="item">
-              <img :src="item" />
+          <el-carousel :interval="5000" height="450px" :autoplay="true">
+            <el-carousel-item v-for="(item, index) in imageSet" :key="item">
+              <div class="carousel-container">
+                <img :src="item" class="carousel-image" />
+                <div class="carousel-text">{{ carouselTexts[index] }}</div>
+              </div>
             </el-carousel-item>
           </el-carousel>
         </el-col>
@@ -26,7 +26,8 @@
 
             <el-col :span="2"><div class="grid-content ep-bg-purple" /> </el-col>
 
-            <match-card />
+            <!-- <match-card /> -->
+            <match-card v-if="socket" :socket="socket" :problem="problem" :match-id="matchId" />
           </div>
         </el-col>
         
@@ -51,9 +52,13 @@ import RankingTable from "../components/HomePage/RankingTable.vue";
 import InfoCard from "../components/HomePage/InfoCard.vue";
 import MatchCard from "../components/HomePage/MatchCard.vue";
 
+import { computed, watch, ref } from 'vue';
+import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
+
 export default {
+  
   components: {
     RankingTable,
     InfoCard,
@@ -64,32 +69,78 @@ export default {
       img1,
       img2,
       img3,
-      imageSet: [img1, img2, img3]
+      imageSet: [img1, img2, img3],
+      socket: null,
+      problem: null,  // 初始化为null
+      matchId: null,
+      carouselTexts: ["KOC is a cutting-edge platform designed to elevate your coding skills. Dive deep into challenges, sharpen your expertise, and climb the ranks among the world's top programmers.", 
+        "KOC offers a curated journey through the vast world of programming. With personalized pathways and real-world challenges, we ensure you're always at the forefront of the coding arena.", 
+        "With KOC, you're not just coding; you're crafting your future. Our platform bridges the gap between learning and real-world application, propelling you towards coding mastery."]
     };
   },
   setup() {
+    const store = useStore();
     const router = useRouter();
+    const userId = computed(() => store.state.userId);
+    const matchedPlayer = computed(() => store.state.matchedPlayer);
+    const problem = ref(null);
+    const matchId = ref(null);
 
-    const moveToCodingPage = () => {
-      router.push({ name: 'codePartComponent' });
+    console.log("UserId from store:", store.state.userId);
+
+    watch(matchedPlayer, (newVal) => {
+      if (newVal) {
+        navigateToCodePartComponent();
+      }
+    });
+
+    const navigateToCodePartComponent = () => {
+      router.push({ name: 'code' });
+    };
+
+    const initWebSocket = () => {
+      if (!userId.value) {
+          console.error("UserId is not defined!");
+          return;
+      }
+
+      const socket = new WebSocket(`ws://localhost:3000/ws/match?userId=${userId.value}`);
+
+      socket.onmessage = handleWebSocketMessage;
+      socket.onclose = handleWebSocketClose;
+
+      console.log("WebSocket initialed");
+      console.log("User ID:", userId.value);  // 打印用户ID
+
+      return socket;
+    };
+
+    const handleWebSocketMessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.problem) {
+        problem.value = data.problem;
+        matchId.value = data.matchId;
+        navigateToCodePartComponent();
+      }
+    };
+
+    const handleWebSocketClose = () => {
+      console.log("WebSocket closed");
+      // 可以选择重新连接或者给用户显示一个消息
     };
 
     return {
-      moveToCodingPage,
+      userId,
+      initWebSocket,
+      handleWebSocketMessage,
+      handleWebSocketClose,
+      navigateToCodePartComponent
     };
   },
-  methods: {
-    checkMatch() {
-      const isMatched = true;
-
-      if (isMatched) {
-        this.moveToPlayingPage();
-      }
-    },
-  },
-  moveToCodingPage() {
-    this.$router.push({ name: 'codePartComponent' });
-  },
+  mounted() {
+    this.socket = this.initWebSocket();
+  }
+  
 };
 
 </script>
@@ -160,11 +211,36 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  // margin-top: 60px;
 }
 
 .status-text {
   color: #ffffff;  /* Set color to white */
   text-align: left; /* Align text to the left */
 }
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.carousel-text {
+  position: absolute;
+  bottom: 10px;  // 调整这个值以改变文本的位置
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5);  // 半透明的黑色背景
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+
 </style>
