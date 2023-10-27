@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style=" overflow:auto; height:100%">
     <el-dialog v-model="dialogVisible" title="Ask Question">
       <el-input
         v-model="addTitle"
@@ -410,6 +410,11 @@ export default {
 </script>
       
       
-      <style>
-</style>
+<style scoped>
+.community {
+  width: 100%;
+  height: 100%;
+  overflow:auto;
+}
+  </style>
       
