@@ -1,7 +1,10 @@
 <template>
-  <el-table :data="filterTableData" style="width: 80%; height: 80%; margin: 5% auto; overflow: none;">
-    <el-table-column label="Date" prop="date" />
-    <el-table-column label="Match id" prop="id" />
+  <el-table
+    :data="myMatchesList"
+    style="width: 80%; height: 80%; margin: 5% auto; overflow: none"
+  >
+    <el-table-column label="Date" prop="startTime" />
+    <el-table-column label="Match id" prop="matchId" />
     <el-table-column
       prop="tag"
       label="Tag"
@@ -15,7 +18,7 @@
     >
       <template #default="scope">
         <el-tag
-          :type="scope.row.tag === 'Win' ? '' : 'success'"
+          :type="scope.row.tag == 'Win' ? 'success' : ''"
           disable-transitions
           >{{ scope.row.tag }}</el-tag
         >
@@ -26,68 +29,127 @@
         <el-input v-model="search" size="small" placeholder="Type to search" />
       </template>
       <template #default="scope">
-        <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-          >Details</el-button
-        >
         <el-button
           size="small"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-          >Report</el-button
+          @click="handleDetail(scope.row)"
+          style="background-color: #409eff; color: white"
+          >Details</el-button
         >
       </template>
     </el-table-column>
   </el-table>
+
+  <!-- 详情弹窗 -->
+  <el-dialog
+    :model-value="detailDialogVisible"
+    @update:model-value="detailDialogVisible = false"
+    width="50%"
+    center
+    :modal="false"
+    title="Detail"
+  >
+    <div class="demo-input-suffix">
+      <div>
+        <span style="font-size: large"><el-tag size="large">PK Date:</el-tag> {{ pkDate }}</span>
+      </div>
+      <br>
+      <div>
+        <span style="font-size: large"><el-tag size="large">Problem:</el-tag>: {{ problemName }}</span>
+      </div>
+      <br />
+      <el-input
+        v-model="codeDetail.submittedCode"
+        :autosize="{ minRows: 4, maxRows: 15 }"
+        type="textarea"
+        placeholder="Please input"
+      />
+      <br />
+      <div>
+        <span style="font-size: large"><el-tag size="large">Result:</el-tag> {{ codeDetail.result }}</span>
+      </div>
+      <br>
+      <div>
+        <span style="font-size: large"
+          ><el-tag size="large">ExecutionTime:</el-tag> {{ codeDetail.executionTime }}</span
+        >
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
-<script lang="ts" setup>
-import { computed, ref } from 'vue'
+<script>
+import { getMyMatches, codeDetail } from "@/api/community";
+//import {ref} from'vue'
+export default {
+  components: {},
+  data() {
+    return {
+      UserID: "",
+      Username: "",
+      // 我的匹配列表
+      myMatchesList: [],
+      // 详情弹窗
+      detailDialogVisible: false,
 
-interface User {
-  date: string
-  id: string
-  tag: string
-}
-
-const search = ref('')
-const filterTableData = computed(() =>
-  tableData.filter(
-    (data) =>
-      !search.value ||
-      data.name.toLowerCase().includes(search.value.toLowerCase())
-  )
-)
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row)
-}
-const handleDelete = (index: number, row: User) => {
-  console.log(index, row)
-}
-
-const tableData: User[] = [
-  {
-    date: '2023-05-03 10:00',
-    id: '1011001118',
-    tag: 'Win',
-  },
-  {
-    date: '2023-05-02 11:00',
-    id: '1011001117',
-    tag: 'Lose',
-  },
-  {
-    date: '2023-05-01 11:00',
-    id: '1011001116',
-    tag: 'Win',
-  },
-  {
-    date: '2023-05-01 10:00',
-    id: '1011001115',
-    tag: 'Lose',
+      // pk相关
+      pkDate: "",
+      problemName: "",
+      codeDetail: {},
+    };
   },
 
-]
-const filterTag = (value: string, row: User) => {
-  return row.tag === value
-}
+  created() {
+    // 读取id
+    this.UserID = localStorage.getItem("id");
+    this.Username = localStorage.getItem("name");
+    console.log("当前登录用户的id为:" + this.UserID);
+    console.log("当前登录用户的name为:" + this.Username);
+
+    this.myMatches();
+  },
+
+  methods: {
+    // 获取我自己的匹配列表
+    myMatches() {
+      getMyMatches(this.UserID).then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          this.myMatchesList = response.data;
+
+          // 判断输赢
+          for (var item of this.myMatchesList) {
+            if (item.winnerId == this.UserID) {
+              item.tag = "Win";
+            } else {
+              item.tag = "Lose";
+            }
+            if (item.winnerId == null) {
+              item.tag = "unknown";
+            }
+          }
+        }
+      });
+    },
+
+    // 详情按钮
+    handleDetail(item) {
+      console.log(item);
+      this.detailDialogVisible = true;
+      this.getCodeDetail(item.problemId);
+
+      this.pkDate = item.startTime;
+      this.problemName = item.problemName;
+    },
+
+    // 获取详情
+    getCodeDetail(problemId) {
+      codeDetail(this.UserID, problemId).then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          this.codeDetail = response.data;
+        }
+      });
+    },
+  },
+};
 </script>

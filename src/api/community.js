@@ -37,3 +37,19 @@ export function addAnswer(publishID,params) {
                 data:params
         })
 }
+
+// 获取自己的匹配列表
+export function getMyMatches(userId) {
+        return axios({
+                method: "GET",
+                url:"/api1/users/"+userId+"/matches"
+        })
+}
+
+// 查看具体代码
+export function codeDetail(userId, problemId) {
+        return axios({
+                method: "GET",
+                url:"/api1/users/"+userId+"/matches/"+problemId
+        })
+}
