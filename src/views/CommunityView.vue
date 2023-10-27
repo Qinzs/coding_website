@@ -178,7 +178,7 @@
               <div class="block">
                 <el-timeline>
                   <div v-for="(item, index) in communities" :key="index">
-                    <el-timeline-item timestamp="2018/4/12" placement="top">
+                    <el-timeline-item timestamp="" placement="top">
                       <el-card>
                         <h4>{{ item.Content }}</h4>
                         <br />

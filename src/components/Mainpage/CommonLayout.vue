@@ -7,19 +7,19 @@
         <el-main>
           <router-view></router-view> <!-- 这里嵌套路由视图 -->
         </el-main>
-       <el-footer>
+       <!-- <el-footer>
            <footerpart></footerpart>
-       </el-footer>
+       </el-footer> -->
       </el-container>
     </div>
   </template>
   <script lang="ts">
   import NavBarPart from './NavBarPart.vue';  
-  import footerpart from './FooterBarPart.vue';
+  // import footerpart from './FooterBarPart.vue';
     export default {
         components: {
         NavBarPart,
-        footerpart
+        // footerpart
         }
     }
     </script>
