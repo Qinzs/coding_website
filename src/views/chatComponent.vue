@@ -136,7 +136,7 @@ const naiveChatRef = ref<NaiveChatType>()
 const userInfo = {
   nickname: 'King',
   avatar: testpicture,
-  id: 1000,
+  id: store.state.user.id,
 }
 //向http://localhost:3000/api1/users/1/contacts发送请求，获取到联系人的信息
 const contacts = ref<Contact[]>([]);
@@ -270,14 +270,35 @@ const convertToMessageFormat = (data) => {
         console.error("Data doesn't have a fromUser property:", data);
         return;
     }
-    //检查data.chatMessage.toUserId和data.fromUser.userId是否和当前用户的id相同
     //如果toUserId和当前用户的id相同，那么就是接收到的信息
-    //如果是的话，就让
+    //如果是的话，就让test1 等于data.fromUser.userId，如果不是，就让test1为toUserId
+    let test1;
+    if (parseInt(data.chatMessage.toUserId) === store.state.user.id) {
+      test1 = data.fromUser.userId;
+    }
+    else {
+      test1 = data.chatMessage.toUserId;
+    }
+    // if (data.chatMessage.toUserId === store.state.user.id) {
+    //     return {
+    //         id: Date.now().toString(), // 这里我只是用了当前时间戳作为消息ID，你可以根据需要更改
+    //         content: data.chatMessage.content,
+    //         type: 'text', // 因为你没有提供消息类型，所以我假设它总是"text"
+    //         toContactId: data.fromUser.userId,
+    //         status: (data.chatMessage.status ===  "success"), // 这里，我假设"unread"对应于"success"
+    //         sendTime: data.chatMessage.sendTime,
+    //         fromUser: {
+    //             id: data.fromUser.userId,
+    //             nickname: data.fromUser.username,
+    //             avatar: data.fromUser.profile // 注意：这里是null，你可能想为其设置一个默认值
+    //         }
+    //     };
+    // }
     return {
         id: Date.now().toString(), // 这里我只是用了当前时间戳作为消息ID，你可以根据需要更改
         content: data.chatMessage.content,
         type: 'text', // 因为你没有提供消息类型，所以我假设它总是"text"
-        toContactId: parseInt(data.chatMessage.toUserId),
+        toContactId: parseInt(test1),
         status: (data.chatMessage.status ===  "success"), // 这里，我假设"unread"对应于"success"
         sendTime: data.chatMessage.sendTime,
         fromUser: {
@@ -293,11 +314,11 @@ const message1: Message[] = [
     id: '1001111110',
     content: 'wijnji',
     type: 'text',
-    toContactId: 3,
+    toContactId: 13,
     status: 'success',
     sendTime: timestamp,
     fromUser: {
-      id: 3,
+      id: store.state.user.id,
       nickname: 'King',
       avatar: 'https://thirdwx.qlogo.cn/mmopen/vi_32/RMksZlPP4myx9pbGzt3PmV2FNIpia8hVHpUXbHM0RfbJtsSMEWCLicbvGuJRMpoAam3sZclNo0YtOnvJ0a8eMtyQ/132',
     },
