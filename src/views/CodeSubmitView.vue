@@ -8,113 +8,26 @@
         <el-card class="box-card">
             <el-row :gutter="16">
               <el-col :span="6">
-              <div class="statistic-card">
-                <el-statistic value="Accept">
-                <template #title>
-                    <div style="display: inline-flex; align-items: center">
-                    Submit Status
-                    <el-tooltip
-                        effect="dark"
-                        content="Number of users who logged into the product in one day"
-                        placement="top"
-                    >
-                        <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                        </el-icon>
-                    </el-tooltip>
-                    </div>
-                </template>
-                </el-statistic>
-            </div>
-            </el-col>
-            
-            <el-col :span="6">
-              <div class="statistic-card">
-                  <el-statistic value="Win">
-                  <template #title>
-                      <div style="display: inline-flex; align-items: center">
-                      PK Result
-                      <el-tooltip
-                          effect="dark"
-                          content="Number of users who logged into the product in one day"
-                          placement="top"
-                      >
-                          <el-icon style="margin-left: 4px" :size="12">
-                          <Warning />
-                          </el-icon>
-                      </el-tooltip>
-                      </div>
-                  </template>
-                  </el-statistic>
-              </div>
-            
-            </el-col>
+                <div class="statistic-card">
+                  <el-statistic v-if="codeSubmitResult" :value="codeSubmitResult.result" title="Submit Status"></el-statistic>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="statistic-card">
+                  <el-statistic v-if="codeSubmitResult" :value="codeSubmitResult.ifwin" title="PK Result"></el-statistic>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="statistic-card">
+                  <el-statistic v-if="codeSubmitResult" :value="codeSubmitResult.runTime" title="Runtime"></el-statistic>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="statistic-card">
+                  <el-statistic v-if="codeSubmitResult" :value="codeSubmitResult.memoryUse" title="Memory"></el-statistic>
+                </div>
+              </el-col>
 
-            <el-col :span="6">
-            <div class="statistic-card">
-                <el-statistic :value="98500">
-                <template #title>
-                    <div style="display: inline-flex; align-items: center">
-                    Runtime
-                    <el-tooltip
-                        effect="dark"
-                        content="Number of users who logged into the product in one day"
-                        placement="top"
-                    >
-                        <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                        </el-icon>
-                    </el-tooltip>
-                    </div>
-                </template>
-                </el-statistic>
-                <div class="statistic-footer">
-                <div class="footer-item">
-                    <span class="green">
-                    Beats 24% 
-                    <el-icon>
-                        <CaretTop />
-                    </el-icon>
-                    </span>
-
-                    <span>of user using java</span>
-                </div>
-                </div>
-            </div>
-            </el-col>
-
-            <el-col :span="6">
-            <div class="statistic-card">
-                <el-statistic :value="693700">
-                <template #title>
-                    <div style="display: inline-flex; align-items: center">
-                    Memory
-                    <el-tooltip
-                        effect="dark"
-                        content="Number of users who logged into the product in one month"
-                        placement="top"
-                    >
-                        <el-icon style="margin-left: 4px" :size="12">
-                        <Warning />
-                        </el-icon>
-                    </el-tooltip>
-                    </div>
-                </template>
-                </el-statistic>
-                <div class="statistic-footer">
-                <div class="footer-item">
-                    
-                    <span class="red">
-                        Beats 12%
-                    <el-icon>
-                        <CaretBottom />
-                    </el-icon>
-                    </span>
-                    <span>of user using java</span>
-                </div>
-                </div>
-            </div>
-            </el-col>
         </el-row>
 
 
@@ -134,19 +47,21 @@
   
   <script lang="ts" setup>
   import * as monaco from 'monaco-editor';
-  import { nextTick, ref, onBeforeUnmount } from 'vue';
-  import {
-    CaretBottom,
-    CaretTop,
-    Warning,
-  } from '@element-plus/icons-vue'
-  import axios from 'axios';
+  import { nextTick, ref, onBeforeUnmount, computed } from 'vue';
+  import { useStore } from 'vuex';
 
-//   import CodeStatus from "../components/CodingPage/CodeStatus.vue";
-  
+  // import {
+  //   CaretBottom,
+  //   CaretTop,
+  //   Warning,
+  // } from '@element-plus/icons-vue'
+  import axios from 'axios';  
   
   const text = ref('');
   const result = ref('');
+  const store = useStore();
+  const codeSubmitResult = computed(() => store.state.codeSubmitResult);
+
   
   let editor: monaco.editor.IStandaloneCodeEditor;
   
@@ -242,8 +157,8 @@
   
   <style scoped lang="scss">
   #codeEditBox {
-    height: 100%;
-    width: auto;
+    height: 500px;  // 设置一个明确的高度
+    width: 100%;    // 设置宽度为100%
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     text-align: left;
   }

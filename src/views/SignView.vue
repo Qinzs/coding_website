@@ -9,20 +9,17 @@
     
   >
     <el-form-item>
-      <el-input placeholder="Enter you Username"  />
+      <el-input placeholder="Enter you Username" v-model="signForm.username" />
     </el-form-item>
     <el-form-item>
-      <el-input placeholder="Enter you email" />
-    </el-form-item>
-    <el-form-item >
-      <el-input  placeholder="Enter you phone number"/>
+      <el-input placeholder="Enter you email" v-model="signForm.Email"/>
     </el-form-item>
     <el-form-item>
-      <el-input     v-model="input1"
+      <el-input     v-model="signForm.password"
     type="password" placeholder="Enter you password"     show-password/>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size = "large" style="margin: auto
+      <el-button @click="handleSign" type="primary" size = "large" style="margin: auto
       ;">
         <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         Sign up
@@ -51,13 +48,60 @@
 </template>
 <script lang="ts" setup>
 import { ChromeFilled } from '@element-plus/icons-vue'
-import {  ref} from 'vue'
+import {  reactive} from 'vue'
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus'
+
+// 添加注册表单的接口
+interface SignForm {
+    username: string
+    password: string
+    Email: string
+}
+
+const signForm = reactive<SignForm>({
+    username: '',
+    password: '',
+    Email: ''
+});
   const $router = useRouter();
-const input1 = ref('')
+
 //点击后转到login页,创建一个函数
 const goToLogin = () => {
   $router.push({ name: 'login' })
+}
+
+const handleSign = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: signForm.username,
+                password: signForm.password,
+                email: signForm.Email
+            })
+        });
+
+        if (response.ok) {
+
+            $router.push({ name: 'login' })
+        } else {
+            console.error('Login failed:', await response.text());
+            open4()
+        }
+    } catch (error) {
+        console.error('Failed to login:', error);
+    }
+}
+const open4 = () => {
+  ElMessage({
+    duration: 5000,
+    message: 'Oops, this username already used.',
+    type: 'error',
+  })
 }
 </script>
 <style scoped>

@@ -26,8 +26,13 @@
 
             <el-col :span="2"><div class="grid-content ep-bg-purple" /> </el-col>
 
-            <!-- <match-card /> -->
-            <match-card v-if="socket" :socket="socket" :problem="problem" :match-id="matchId" />
+            <div class="card">
+              <button @click="startMatching" :disabled="matching">Match a player</button>
+              <div v-if="matching" class="timer">
+                Matching in: <span>{{ timeLeft }}</span> seconds
+                <button @click="cancelMatching" class="cancel-button">X</button>
+              </div>
+            </div>
           </div>
         </el-col>
         
@@ -50,9 +55,8 @@ import img3 from "../assets/carousel-3.jpg";
 
 import RankingTable from "../components/HomePage/RankingTable.vue";
 import InfoCard from "../components/HomePage/InfoCard.vue";
-import MatchCard from "../components/HomePage/MatchCard.vue";
 
-import { computed, watch, ref } from 'vue';
+import { ref, watchEffect, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
@@ -62,7 +66,6 @@ export default {
   components: {
     RankingTable,
     InfoCard,
-    MatchCard,
   },
   data() {
     return {
@@ -70,6 +73,9 @@ export default {
       img2,
       img3,
       imageSet: [img1, img2, img3],
+      matching: false,
+      timeLeft: 30,
+      timerId: null,
       socket: null,
       problem: null,  // 初始化为null
       matchId: null,
@@ -81,72 +87,85 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const userId = computed(() => store.state.userId);
-    const matchedPlayer = computed(() => store.state.matchedPlayer);
-    const problem = ref(null);
-    const matchId = ref(null);
-
-    console.log("UserId from store:", store.state.userId);
-
-    watch(matchedPlayer, (newVal) => {
-      if (newVal) {
-        navigateToCodePartComponent();
-      }
-    });
+    const userId = ref(store.state.user?.id);
+    const socket = ref(null);
 
     const navigateToCodePartComponent = () => {
       router.push({ name: 'code' });
     };
 
     const initWebSocket = () => {
-      if (!userId.value) {
-          console.error("UserId is not defined!");
-          return;
-      }
+      socket.value = new WebSocket(`ws://localhost:3000/ws/match?userId=${userId.value}`);
 
-      const socket = new WebSocket(`ws://localhost:3000/ws/match?userId=${userId.value}`);
+      
+      socket.value.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-      socket.onmessage = handleWebSocketMessage;
-      socket.onclose = handleWebSocketClose;
+        // 打印接收到的消息
+        console.log("Received WebSocket message:", data);
 
-      console.log("WebSocket initialed");
-      console.log("User ID:", userId.value);  // 打印用户ID
+        if (data.problem) {
+          store.commit('SET_CODING_PROBLEM', data.problem);
+          navigateToCodePartComponent();
+        }
 
-      return socket;
+        // 使用mutation更新store中的matchId
+        store.commit('SET_MATCH_ID', data.matchId);
+      };
+
+      socket.value.onclose = () => {
+        console.log("WebSocket closed");
+      };
     };
 
-    const handleWebSocketMessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.problem) {
-        problem.value = data.problem;
-        matchId.value = data.matchId;
+    watchEffect(() => {
+      if (store.state.matchedPlayer) {
         navigateToCodePartComponent();
       }
-    };
+    });
 
-    const handleWebSocketClose = () => {
-      console.log("WebSocket closed");
-      // 可以选择重新连接或者给用户显示一个消息
-    };
+    onUnmounted(() => {
+      if (socket.value) {
+        socket.value.close();
+      }
+    });
 
     return {
-      userId,
       initWebSocket,
-      handleWebSocketMessage,
-      handleWebSocketClose,
-      navigateToCodePartComponent
     };
   },
-  mounted() {
-    this.socket = this.initWebSocket();
-  }
-  
+  methods: {
+    startMatching() {
+      this.matching = true;
+      this.initWebSocket();
+
+      this.timerId = setInterval(() => {
+        if (this.timeLeft === 0) {
+          this.endMatching();
+        } else {
+          this.timeLeft--;
+        }
+      }, 1000);
+    },
+    cancelMatching() {
+      this.endMatching();
+      console.log("Matching cancelled");
+    },
+    endMatching() {
+      this.matching = false;
+      clearInterval(this.timerId);
+      this.timeLeft = 30;
+      if (this.socket) {
+        this.socket.close();
+      }
+    },
+  },
 };
 
 </script>
   
 
-<style lang="scss">
+<style lang="scss" scoped>
   main {
     background-image: url('../assets/home_background.png');
     background-size: cover;
@@ -242,5 +261,28 @@ export default {
   border-radius: 5px;
 }
 
-
+.card {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  text-align: center;
+  margin: auto;
+}
+.timer {
+  margin-top: 20px;
+  position: relative;
+}
+.cancel-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: #e44;
+  color: #fff;
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.cancel-button:hover {
+  background-color: #c33;
+}
 </style>

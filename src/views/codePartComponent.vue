@@ -1,43 +1,47 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="codingProblem"> <!-- 添加 v-if 条件 -->
     <div class="e-box">
       <div id="codeEditBox"></div>
       <el-button type="primary" @click="submit">submit</el-button>
     </div>
     <div class="description">
       <el-card class="box-card">
-    <template #header>
-      <div class="card-header">
-        <span>Code Quesstions</span>
-      </div>
-    </template>
-    <div class="text item">Given an integer array nums and an integer target value target, you find the two integers in the array that sum to the target value target and return their array subscripts.
-
-You can assume that each input will correspond to only one answer. However, the same element in the array cannot be repeated in the answer.
-
-You can return the answers in any order.</div>
-
-
-<div class="text item" style="font-weight: bold;" >Example 1:</div>
-<div class="text item">Input: nums = [2,7,11,15], target = 9
-<br>
-Output: [0,1]
-<br>
-Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</div>
-
-    
-  </el-card>
+        <template #header>
+          <div class="card-header">
+            <span>{{ codingProblem.title }}</span>
+          </div>
+        </template>
+        <div class="text item">{{ codingProblem.description }}</div>
+        <div class="text item" style="font-weight: bold;">Example:</div>
+        <div class="text item">
+          Input: {{ codingProblem.inputFormat }}<br>
+          Output: {{ codingProblem.outputFormat }}<br>
+          Explanation: {{ codingProblem.sampleInput }}
+        </div>
+      </el-card>
     </div>
+  </div>
+  
+  <div v-else> <!-- 当 codingProblem 不存在时显示的内容 -->
+    Loading problem...
   </div>
 </template>
 
 <script lang="ts" setup>
 import * as monaco from 'monaco-editor';
-import { nextTick, ref, onBeforeUnmount } from 'vue';
+import { nextTick, ref, onBeforeUnmount, computed } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const store = useStore();
+const codingProblem = computed(() => store.state.codingProblem);
 
 const text = ref('');
 const result = ref('');
+
+const userId = ref(store.state.user?.id);
+const matchId = computed(() => store.state.matchId);
 
 let editor: monaco.editor.IStandaloneCodeEditor;
 
@@ -66,13 +70,42 @@ onBeforeUnmount(() => {
   editor.dispose();
 });
 
+const router = useRouter();
+
 const submit = async () => {
+  console.log("userId: ", userId.value);
+  console.log("matchId: ", matchId.value);
+  console.log("problemId: ", codingProblem.value.problemID);
+  console.log("inputFormat: ", codingProblem.value.inputFormat);
+  console.log("outputFormat: ", codingProblem.value.outputFormat);
+  console.log("problemSolutions: ", text.value);
+
   try {
-    const response = await axios.post('http://localhost:3000/pk/coderesult', {
-      source_code: text.value
+    const payload = {
+      userId: userId.value,
+      matchId: matchId.value,
+      problemId: codingProblem.value.problemID,
+      inputFormat: codingProblem.value.inputFormat,
+      outputFormat: codingProblem.value.outputFormat,
+      problemSolutions: text.value
+    };
+
+    const response = await axios.post('http://localhost:3000/submitCode', JSON.stringify(payload), {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
-    console.log(response.data);
-    result.value = response.data.status.description;
+
+    // 直接使用 response.data 而不是尝试解析它
+    const responseData = response.data;
+    console.log(responseData); 
+    result.value = responseData.result;
+
+    // 将结果存储到store中
+    store.commit('SET_CODE_SUBMIT_RESULT', responseData);
+
+    // 导航到 codesubmitview
+    router.push('/codesubmit');
   } catch (error) {
     console.error('Error submitting code:', error);
   }
@@ -81,8 +114,8 @@ const submit = async () => {
 
 <style scoped lang="scss">
 #codeEditBox {
-  height: 100%;
-  width: auto;
+  height: 500px;  // 设置一个明确的高度
+  width: 100%;    // 设置宽度为100%
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
   text-align: left;
 }
