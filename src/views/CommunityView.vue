@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style=" overflow:auto; height:100%">
     <el-dialog v-model="dialogVisible" title="Ask Question">
       <el-input
         v-model="addTitle"
@@ -178,7 +178,7 @@
               <div class="block">
                 <el-timeline>
                   <div v-for="(item, index) in communities" :key="index">
-                    <el-timeline-item timestamp="2018/4/12" placement="top">
+                    <el-timeline-item timestamp="" placement="top">
                       <el-card>
                         <h4>{{ item.Content }}</h4>
                         <br />
@@ -264,20 +264,20 @@ export default {
         },
       ],
 
-      // 列表详情
+      // list detail
       detail: {},
       UserID: 0,
       Username: "",
-      // 回答列表
+      // answer list
       communities: [],
-      // 新增回答
+      // add answers
       addAnswerContent: "",
     };
   },
 
   created() {
     this.getCommunityList();
-    // 读取id
+    // get id
     this.UserID = localStorage.getItem("id");
     this.Username = localStorage.getItem("name");
     console.log("当前登录用户的id为:" + this.UserID);
@@ -285,7 +285,7 @@ export default {
   },
 
   methods: {
-    //  获取提问列表
+    //  get question posts
     getCommunityList() {
       getCommunity().then((response) => {
         console.log(response);
@@ -295,7 +295,7 @@ export default {
       });
     },
 
-    // 显示详情
+    // show detail of question post
     showDetail(item) {
       console.log(1111);
       console.log(item);
@@ -305,7 +305,7 @@ export default {
       this.getCommunityAnswerList(item.PublishID);
     },
 
-    // 获取所有的的回答
+    // get all answers
     getCommunityAnswerList(publishID) {
       getCommunityAnswers(publishID).then((response) => {
         console.log(response);
@@ -316,7 +316,7 @@ export default {
       });
     },
 
-    // 新增提问
+    // add new question
     addNew() {
       // 新增提问
       addNew({
@@ -343,7 +343,7 @@ export default {
       });
     },
 
-    // 新增回答
+    // add new answer
     addAnswer() {
       addAnswer(this.detail.PublishID, {
         UserID: this.UserID,
@@ -369,47 +369,14 @@ export default {
     },
   },
 };
-
-//const dialogVisible = ref(false)
-//const textarea = ref("")
-
-// const communityDatas = ref([
-//         {
-//                 title: 'xxx',
-//                 authorName: 'yyy',
-//                 content: 'hello',
-//                 answerNumber: '10',
-//                 views: '100',
-//                 answerLatest: '10:20',
-//                 uid: 11001
-//         },
-//         {
-//                 title: 'xxx',
-//                 authorName: 'yyy',
-//                 content: 'hello',
-//                 answerNumber: '10',
-//                 views: '100',
-//                 answerLatest: '10:20',
-//                 uid: 11001
-//         }
-// ])
-// const answerData = ref([
-//         {
-//                 content: 'xxx',
-//                 authorName: 'yyy',
-//                 uid: 11001,
-//                 datetime: '10:20',
-//         },
-//         {
-//                 content: 'xxx',
-//                 authorName: 'yyy',
-//                 uid: 11001,
-//                 datetime: '10:20',
-//         },
-// ])
 </script>
       
       
-      <style>
-</style>
+<style scoped>
+.community {
+  width: 100%;
+  height: 100%;
+  overflow:auto;
+}
+  </style>
       
