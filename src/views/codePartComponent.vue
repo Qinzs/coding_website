@@ -18,6 +18,11 @@
           Output: {{ codingProblem.outputFormat }}<br>
           Explanation: {{ codingProblem.sampleInput }}
         </div>
+
+        <div class="text item" style="font-weight: bold;">Sample C++ Code:</div>
+        <div class="code-sample-container">
+          <pre class="code-sample">{{ cppSampleCode }}</pre>
+        </div>
       </el-card>
     </div>
   </div>
@@ -110,6 +115,27 @@ const submit = async () => {
     console.error('Error submitting code:', error);
   }
 }
+
+const cppSampleCode = ref(`#include <iostream>
+
+using namespace std;
+
+int compute_gcd(int a, int b) {
+    while (b != 0) {
+        int remainder = a % b;
+        a = b;
+        b = remainder;
+    }
+    return a;
+}
+
+int main() {
+    int a, b;
+    scanf("a = %d, b = %d", &a, &b);
+    int result = compute_gcd(a, b);
+    cout << result << endl;
+    return 0;
+}`);
 </script>
 
 <style scoped lang="scss">
@@ -160,5 +186,20 @@ const submit = async () => {
   margin: 3% auto;
   border-radius: 15px;
   padding: 0;
+}
+
+.code-sample-container {
+  max-height: 200px;
+  overflow-y: auto;   // 当内容超出时，显示垂直滚动条
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.code-sample {
+  background-color: #f5f5f5;
+  padding: 10px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  white-space: pre-wrap; // 保持格式
 }
 </style>
