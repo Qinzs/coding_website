@@ -1,6 +1,7 @@
 <template>
   <el-table
-    :data="myMatchesList"
+    :data="refreshMachesList"
+    @filter-change="handleFilter"
     style="width: 80%; height: 80%; margin: 5% auto; overflow: none"
   >
     <el-table-column label="Date" prop="startTime" />
@@ -9,11 +10,12 @@
       prop="tag"
       label="Tag"
       width="100"
+      column-key="filterTag"
       :filters="[
-        { text: 'Win', value: 'Win' },
-        { text: 'Lose', value: 'Lose' },
+        { text: 'win', value: 'Win' },
+        { text: 'lose', value: 'Lose' },
+        {text:'unknown',value:'unknown'},
       ]"
-      :filter-method="filterTag"
       filter-placement="bottom-end"
     >
       <template #default="scope">
@@ -26,14 +28,17 @@
     </el-table-column>
     <el-table-column align="right">
       <template #header>
-        <el-input v-model="search" size="small" placeholder="Type to search" />
+        <div class="block">
+        <el-date-picker type="date" :clearabl="true" v-model="selectedDate" @change="handleDateChange" value-format="YYYY-MM-DD"  placeholder="select date"></el-date-picker>
+        </div>
+        <!-- <el-input v-model="search" size="small" placeholder="Type to search" /> -->
       </template>
       <template #default="scope">
         <el-button
           size="small"
           @click="handleDetail(scope.row)"
           style="background-color: #409eff; color: white"
-          >Details</el-button
+          >Details</el-button     
         >
       </template>
     </el-table-column>
@@ -83,11 +88,14 @@ import { getMyMatches, codeDetail } from "@/api/community";
 export default {
   components: {},
   data() {
+   
     return {
       UserID: "",
+      selectedDate:null,
       Username: "",
       // 我的匹配列表
       myMatchesList: [],
+      refreshMachesList:[],
       // 详情弹窗
       detailDialogVisible: false,
 
@@ -112,9 +120,11 @@ export default {
     // 获取我自己的匹配列表
     myMatches() {
       getMyMatches(this.UserID).then((response) => {
-        console.log(response);
+        //console.log(response);
         if (response.status == 200) {
           this.myMatchesList = response.data;
+          this.refreshMachesList = response.data;
+          //console.log(this.myMatchesList);
 
           // 判断输赢
           for (var item of this.myMatchesList) {
@@ -131,7 +141,39 @@ export default {
       });
     },
 
-    // 详情按钮
+    handleDateChange(time) {
+      this.selectedDate = time;
+      console.log(time);
+      if (time != null)
+      {
+        this.refreshMachesList = this.filterJsonByEndTime(this.myMatchesList, this.selectedDate);
+      } else {
+        this.refreshMachesList = this.myMatchesList;
+      }
+    },
+
+    filterJsonByEndTime(jsonList, targetDate) {
+      console.log(jsonList);
+      const filteredList = jsonList.filter((item) => {
+        const startTime = item.startTime.split(" ")[0];
+        return startTime === targetDate;
+      });
+      console.log(filteredList);
+      return filteredList;
+    },
+
+    handleFilter(filterObj) {
+      //console.log(filterObj.filterTag);
+      if (filterObj.filterTag.length > 0) {
+        this.refreshMachesList = this.myMatchesList.filter(match => filterObj.filterTag.includes(match.tag));
+      } else {
+        this.refreshMachesList = this.myMatchesList;
+        console.log("点击重置")
+      }
+
+    },
+
+    // detail button 
     handleDetail(item) {
       console.log(item);
       this.detailDialogVisible = true;
@@ -141,7 +183,7 @@ export default {
       this.problemName = item.problemName;
     },
 
-    // 获取详情
+    // get detail 
     getCodeDetail(problemId) {
       codeDetail(this.UserID, problemId).then((response) => {
         console.log(response);
